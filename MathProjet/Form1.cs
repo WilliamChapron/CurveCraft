@@ -10,103 +10,218 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OxyPlot.Annotations;
+using System.Diagnostics;
+using System.Reflection;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace MathProjet
 {
+
     public partial class Form1 : Form
     {
         private PlotView plotView;
         private PlotModel plotModel;
-        private LineSeries series;
+        private ScatterSeries scatterSeries;
+        private LineSeries lineSeries;
 
-        private Timer timer;
-        private double time = 0;
-        private double dt = 0.1; // Intervalle de temps entre les mises à jour (en secondes)
+        private List<double> slopes;
+
+        struct PointInfo
+        {
+            public char Letter;
+            public double X;
+            public double Y;
+        }
+
+        struct Segment
+        {
+            public PointInfo Point1 { get; set; }
+            public PointInfo Point2 { get; set; }
+            public double Slope { get; set; }
+        }
+
+        private List<Segment> segments = new List<Segment>();
+        private List<PointInfo> points = new List<PointInfo>();
 
         public Form1()
         {
             InitializeComponent();
             InitializePlot();
-            InitializeTimer();
+
+
+            // Organisé par ordre de x  -> 9 points
+            points.Add(new PointInfo() { Letter = 'C', X = 1.99, Y = 2.78 }); // 0
+            points.Add(new PointInfo() { Letter = 'D', X = 2, Y = 7.13 }); // 1
+            points.Add(new PointInfo() { Letter = 'F', X = 3.60, Y = 9.69 }); // 2
+            points.Add(new PointInfo() { Letter = 'M', X = 5.92, Y = 1.52 }); // 3
+            points.Add(new PointInfo() { Letter = 'E', X = 6, Y = 7 }); // 4
+            points.Add(new PointInfo() { Letter = 'G', X = 8, Y = 7.13 }); // 5
+            points.Add(new PointInfo() { Letter = 'H', X = 8.44, Y = 8.83 }); // 6
+            points.Add(new PointInfo() { Letter = 'L', X = 9.07, Y = 3.36 }); // 7
+            points.Add(new PointInfo() { Letter = 'I', X = 9.40, Y = 5.54 }); // 8
+
+
+            // organisé  par rapport au tracé de la forme -> 9  segments
+            segments.Add(new Segment() { Point1 = points[0], Point2 = points[1] }); // CD -> 0
+            segments.Add(new Segment() { Point1 = points[1], Point2 = points[4] }); // DE -> 1
+            segments.Add(new Segment() { Point1 = points[4], Point2 = points[2] }); // EF -> 2
+            segments.Add(new Segment() { Point1 = points[2], Point2 = points[6] }); // FH -> 3
+            segments.Add(new Segment() { Point1 = points[6], Point2 = points[5] }); // HG -> 4
+            segments.Add(new Segment() { Point1 = points[5], Point2 = points[8] }); // GI -> 5
+            segments.Add(new Segment() { Point1 = points[8], Point2 = points[7] }); // IL -> 6
+            segments.Add(new Segment() { Point1 = points[7], Point2 = points[3] }); // LM -> 7
+            segments.Add(new Segment() { Point1 = points[3], Point2 = points[0] }); // MC -> 8
+
+
+            CalculateSlopes();
+
+            foreach (var point in points)
+            {
+               listBoxPoints.Items.Add($"Point : ({point.Letter}, {point.X}, {point.Y})");
+            }
+            foreach (var segment in segments)
+            {
+                listBoxPentes.Items.Add($"Segment : {segment.Point1.Letter}{segment.Point2.Letter}, , Pente {segment.Slope}");
+  
+            }
+
+
+            DrawPoints();
+            DrawLines();
+
+            AddGridLines();
         }
 
         private void InitializePlot()
         {
-            // Créer le modèle de plot
-            plotModel = new PlotModel { Title = "Courbe dynamique en fonction du temps" };
+            plotModel = new PlotModel { Title = "Points et lignes" };
 
-            // Ajouter une série de données (initialisée avec une valeur nulle)
-            series = new LineSeries();
-            plotModel.Series.Add(series);
+            scatterSeries = new ScatterSeries();
+            plotModel.Series.Add(scatterSeries);
 
-            // Créer le contrôle PlotView et l'ajouter au formulaire
+            lineSeries = new LineSeries();
+            plotModel.Series.Add(lineSeries);
+
             plotView = new PlotView
             {
-                Dock = DockStyle.Fill,
+                Size = new Size(1200, 800),
                 Model = plotModel
             };
             Controls.Add(plotView);
         }
 
-        private void InitializeTimer()
+        private void AddGridLines()
         {
-            // Initialiser la minuterie avec l'intervalle de temps spécifié
-            timer = new Timer();
-            timer.Interval = (int)(dt * 1000); // Convertir dt en millisecondes
-            timer.Tick += Timer_Tick;
-            timer.Start(); // Démarrer la minuterie
+            plotModel.Axes.Add(new OxyPlot.Axes.LinearAxis
+            {
+                Position = OxyPlot.Axes.AxisPosition.Bottom,
+                Minimum = 1,
+                Maximum = 15,
+                MajorStep = 0.5,
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.None
+            });
+
+            plotModel.Axes.Add(new OxyPlot.Axes.LinearAxis
+            {
+                Position = OxyPlot.Axes.AxisPosition.Left,
+                Minimum = 1,
+                Maximum = 15,
+                MajorStep = 0.5,
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.None
+            });
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        private void DrawPoints()
         {
-            // Mettre à jour les données de la série avec de nouvelles valeurs
-            double y = Math.Sin(time); // Par exemple, une fonction sinus pour simuler une évolution dans le temps
-            series.Points.Add(new DataPoint(time, y));
-
-            // Incrémenter le temps
-            time += dt;
-
-            // Limiter le nombre de points affichés pour éviter les fuites de mémoire
-            if (series.Points.Count > 100)
+            scatterSeries.Points.Clear();
+            foreach (var point in points)
             {
-                series.Points.RemoveAt(0); // Supprimer le premier point
+                scatterSeries.Points.Add(new ScatterPoint(point.X, point.Y));
+                scatterSeries.TrackerFormatString = $"Point : {point.Letter} ({point.X}, {point.Y})";
+            }
+            plotModel.InvalidatePlot(true);
+        }
+
+        private void DrawLines()
+        {
+            lineSeries.Points.Clear();
+
+            foreach (var segment in segments)
+            {
+                PointInfo point1 = segment.Point1;
+                PointInfo point2 = segment.Point2;
+
+                lineSeries.Points.Add(new DataPoint(point1.X, point1.Y));
+                lineSeries.Points.Add(new DataPoint(point2.X, point2.Y));
+
+                lineSeries.Points.Add(new DataPoint(double.NaN, double.NaN));
             }
 
-            // Mettre à jour le graphique avec les nouvelles données
-            plotView.InvalidatePlot(true);
+            plotModel.InvalidatePlot(true);
         }
+
+        private void CalculateSlopes()
+        {
+            List<Segment> segmentsTempo = new List<Segment>(segments);
+            for (int i = 0; i < segmentsTempo.Count; i++)
+            {
+                double deltaY;
+                double deltaX;
+                if (segmentsTempo[i].Point1.X < segmentsTempo[i].Point2.X)
+                {
+                    // point2 in x in segment is before point 1, We inverse, because we want pent from left to right
+                    deltaY = segmentsTempo[i].Point2.Y - segmentsTempo[i].Point1.Y;
+                    deltaX = segmentsTempo[i].Point2.X - segmentsTempo[i].Point1.X;
+                }
+                else
+                {
+                    // It's normal, point2 in x is after point 1
+                    deltaY = segmentsTempo[i].Point1.Y - segmentsTempo[i].Point2.Y;
+                    deltaX = segmentsTempo[i].Point1.X - segmentsTempo[i].Point2.X;
+                }
+
+                double slope = deltaY / deltaX;
+
+                if (slope < 100)
+                {
+                    segments[i] = new Segment
+                    {
+                        Point1 = segments[i].Point1,
+                        Point2 = segments[i].Point2,
+                        Slope = slope
+                    };
+                }
+                else
+                {
+                    segments[i] = new Segment
+                    {
+                        Point1 = segments[i].Point1,
+                        Point2 = segments[i].Point2,
+                        Slope = double.NaN
+                    };
+                }
+            }
+        }
+
+
 
 
 
         private void start_App_btn_Click(object sender, EventArgs e)
         {
-            // Récupérer la position de Form1
             Point form1Location = this.Location;
 
-            // Cacher Form1
             this.Hide();
 
-            // Créer et configurer Form2
             Form2 form2 = new Form2();
             form2.StartPosition = FormStartPosition.Manual;
             form2.Location = form1Location;
 
-            // Montrer Form2 avec une animation
-            form2.Opacity = 1; // Définir l'opacité à 0 pour commencer
+            form2.Opacity = 1;
             form2.Show();
-
-            // Ajouter une animation pour augmenter l'opacité en douceur
-            //Timer timer = new Timer();
-            //timer.Interval = 20; // Interval en millisecondes
-            //timer.Tick += (timerSender, args) =>
-            //{
-            //    form2.Opacity += 0.05; // Augmenter l'opacité progressivement
-            //    if (form2.Opacity >= 1) // Arrêter l'animation lorsque l'opacité atteint 1
-            //    {
-            //        timer.Stop(); // Arrêter le timer
-            //    }
-            //};
-            //timer.Start(); // Démarrer le timer
         }
     }
 }
