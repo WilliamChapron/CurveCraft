@@ -208,7 +208,27 @@ namespace MathProjet
             plotModel.InvalidatePlot(true);
         }
 
+        private void DrawInterpolationCurve()
+        {
 
+            var xValues = new[] { 1.0, 2.0, 3.0, 4.0 };
+            var yValues = new[] { 2.0, 3.0, 5.0, 4.0 };
+            var slopes = new[] { 0.5, -0.2, 0.7, 0.1 };
+
+
+            var spline = CubicSpline.InterpolateHermite(xValues, yValues, slopes);
+
+
+            var interpolatedPoints = new List<DataPoint>();
+            for (double x = xValues[0]; x <= xValues[xValues.Length - 1]; x += 0.1)
+            {
+                double y = spline.Interpolate(x);
+                interpolatedPoints.Add(new DataPoint(x, y));
+            }
+
+            lineSeries.Points.Clear();
+            lineSeries.Points.AddRange(interpolatedPoints);
+        }
 
         private void DebugMessage(string message)
         {
@@ -244,7 +264,6 @@ namespace MathProjet
             for (int i = 0; i < interpolatedPoints.Count - 1; i++)
             {
                 lineSeries.Points.Add(interpolatedPoints[i]);
-                lineSeries.Points.Add(interpolatedPoints[i + 1]);
                 lineSeries.Points.Add(new DataPoint(double.NaN, double.NaN)); 
             }
         }
