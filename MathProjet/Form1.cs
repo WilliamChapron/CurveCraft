@@ -19,11 +19,13 @@ using MathNet.Numerics.Interpolation;
 
 using System.Runtime.InteropServices;
 using System.IO;
+using MathNet.Numerics.Distributions;
+using static System.Net.WebRequestMethods;
+using System.Security.Cryptography;
 
 
 namespace MathProjet
 {
-
     public partial class Form1 : Form
     {
         private PlotView plotView;
@@ -31,13 +33,13 @@ namespace MathProjet
         private ScatterSeries scatterSeries;
         private LineSeries lineSeries;
 
-
         struct PointInfo
         {
             public char Letter;
             public double X;
             public double Y;
             public double slope;
+            public bool isReverse;
         }
 
         struct Segment
@@ -49,66 +51,54 @@ namespace MathProjet
 
         private List<Segment> segments = new List<Segment>();
         private List<PointInfo> points = new List<PointInfo>();
+        private bool[] isReverse = new bool[11]; // Tableau pour stocker les informations sur le sens des segments
+
+        public void StartFunction()
+        {
+            // Ajout des points
+            points.Add(new PointInfo() { Letter = 'C', X = 9, Y = 30, slope = 12.5, isReverse = false }); // 0
+            points.Add(new PointInfo() { Letter = 'D', X = 30, Y = 35, slope = 20 / 6, isReverse = true }); // 1
+            points.Add(new PointInfo() { Letter = 'E', X = 18, Y = 48, slope = 2.25, isReverse = false }); // 2
+            points.Add(new PointInfo() { Letter = 'F', X = 43, Y = 42, slope = 10, isReverse = true }); // 3
+            points.Add(new PointInfo() { Letter = 'H', X = 37, Y = 29, slope = 15, isReverse = false }); // 5
+            points.Add(new PointInfo() { Letter = 'G', X = 47, Y = 32, slope = 0, isReverse = false }); // 4
+            points.Add(new PointInfo() { Letter = 'I', X = 48, Y = 23, slope = 30, isReverse = true }); // 6
+            points.Add(new PointInfo() { Letter = 'L', X = 29, Y = 13, slope = 2.5, isReverse = false }); // 7
+            points.Add(new PointInfo() { Letter = 'M', X = 30, Y = 8, slope = 2 + (2 / 3), isReverse = true }); // 8
+            points.Add(new PointInfo() { Letter = 'N', X = 13, Y = 10, slope = 10 / 13, isReverse = true }); // 9
+            points.Add(new PointInfo() { Letter = 'C', X = 9, Y = 30, slope = 12.5, isReverse = false }); // Repeat the first point to close the loop
+
+            // Initialisation du tableau isReverse
+            for (int i = 0; i < 10; i++)
+            {
+                isReverse[i] = points[i].isReverse;
+            }
+
+            // Initialisation de la DataGridView
+            dataGridViewPoints.ReadOnly = false;
+            CalculateSlopes();
+
+            dataGridViewPoints.ColumnCount = 4;
+            dataGridViewPoints.Columns[0].Name = "Letter";
+            dataGridViewPoints.Columns[1].Name = "X";
+            dataGridViewPoints.Columns[2].Name = "Y";
+            dataGridViewPoints.Columns[3].Name = "Slope";
+
+            // Ajout des points à la DataGridView
+            foreach (var point in points)
+            {
+                dataGridViewPoints.Rows.Add(point.Letter, point.X, point.Y, point.slope);
+            }
+
+            RenderDraw();
+            AddGridLines();
+        }
 
         public Form1()
         {
             InitializeComponent();
             InitializePlot();
-
-
-
-
-            // Organisé par ordre de x  -> 9 points
-            //points.Add(new PointInfo() { Letter = 'C', X = 1.99, Y = 2.78 }); // 0
-            //points.Add(new PointInfo() { Letter = 'D', X = 2, Y = 7.13 }); // 1
-            //points.Add(new PointInfo() { Letter = 'F', X = 3.60, Y = 9.69 }); // 2
-            //points.Add(new PointInfo() { Letter = 'M', X = 5.92, Y = 1.52 }); // 3
-            //points.Add(new PointInfo() { Letter = 'E', X = 6, Y = 7 }); // 4
-            //points.Add(new PointInfo() { Letter = 'G', X = 8, Y = 7.13 }); // 5
-            //points.Add(new PointInfo() { Letter = 'H', X = 8.44, Y = 8.83 }); // 6
-            //points.Add(new PointInfo() { Letter = 'L', X = 9.07, Y = 3.36 }); // 7
-            //points.Add(new PointInfo() { Letter = 'I', X = 9.40, Y = 5.54 }); // 8
-
-            points.Add(new PointInfo() { Letter = 'C', X = 1.99, Y = 2.78 }); // 0
-            points.Add(new PointInfo() { Letter = 'D', X = 2, Y = 7.13 }); // 1
-            points.Add(new PointInfo() { Letter = 'E', X = 6, Y = 7 }); // 2
-            points.Add(new PointInfo() { Letter = 'F', X = 3.60, Y = 9.69 }); // 3
-            points.Add(new PointInfo() { Letter = 'H', X = 8.44, Y = 8.83 }); // 5
-            points.Add(new PointInfo() { Letter = 'G', X = 8, Y = 7.13 }); // 4
-            points.Add(new PointInfo() { Letter = 'I', X = 9.40, Y = 5.54 }); // 6
-            points.Add(new PointInfo() { Letter = 'L', X = 9.07, Y = 3.36 }); // 7
-            points.Add(new PointInfo() { Letter = 'M', X = 5.92, Y = 1.52 }); // 8
-
-
-            //// organisé  par rapport au tracé de la forme -> 9  segments
-            //segments.Add(new Segment() { Point1 = points[0], Point2 = points[1] }); // CD -> 0
-            //segments.Add(new Segment() { Point1 = points[1], Point2 = points[4] }); // DE -> 1
-            //segments.Add(new Segment() { Point1 = points[4], Point2 = points[2] }); // EF -> 2
-            //segments.Add(new Segment() { Point1 = points[2], Point2 = points[6] }); // FH -> 3
-            //segments.Add(new Segment() { Point1 = points[6], Point2 = points[5] }); // HG -> 4
-            //segments.Add(new Segment() { Point1 = points[5], Point2 = points[8] }); // GI -> 5
-            //segments.Add(new Segment() { Point1 = points[8], Point2 = points[7] }); // IL -> 6
-            //segments.Add(new Segment() { Point1 = points[7], Point2 = points[3] }); // LM -> 7
-            //segments.Add(new Segment() { Point1 = points[3], Point2 = points[0] }); // MC -> 8
-
-
-            CalculateSlopes();
-
-            foreach (var point in points)
-            {
-               listBoxPoints.Items.Add($"Point : ({point.Letter}, {point.X}, {point.Y}), Slope : {point.slope}");
-            }
-            //foreach (var segment in segments)
-            //{
-            //    listBoxPentes.Items.Add($"Segment : {segment.Point1.Letter}{segment.Point2.Letter}, , Pente {segment.Slope}");
-            //}
-
-
-            //DrawPoints();
-            //DrawLines();
-            RenderDraw();
-
-            AddGridLines();
+            StartFunction();
         }
 
         private void InitializePlot()
@@ -152,126 +142,73 @@ namespace MathProjet
             });
         }
 
-        private void DrawPoints()
-        {
-            scatterSeries.Points.Clear();
-            foreach (var point in points)
-            {
-                scatterSeries.Points.Add(new ScatterPoint(point.X, point.Y));
-                scatterSeries.TrackerFormatString = $"Point : {point.Letter} ({point.X}, {point.Y})";
-            }
-            plotModel.InvalidatePlot(true);
-        }
-
-        private void DrawLines()
-        {
-            lineSeries.Points.Clear();
-
-            for (int i = 0; i < points.Count - 1; i++)
-            {
-                PointInfo point1 = points[i];
-                PointInfo point2 = points[i + 1];
-
-                lineSeries.Points.Add(new DataPoint(point1.X, point1.Y));
-                lineSeries.Points.Add(new DataPoint(point2.X, point2.Y));
-
-                lineSeries.Points.Add(new DataPoint(double.NaN, double.NaN));
-            }
-
-            plotModel.InvalidatePlot(true);
-        }
-
-
         private void RenderDraw()
         {
             lineSeries.Points.Clear();
 
+            List<DataPoint> allPoints = new List<DataPoint>();
+
             for (int i = 0; i < points.Count - 1; i++)
             {
                 PointInfo point1 = points[i];
                 PointInfo point2 = points[i + 1];
 
+                double pt1X = point1.X;
+                double pt2X = point2.X;
+                double pt1Y = point1.Y;
+                double pt2Y = point2.Y;
+                double currentSlope = point1.slope;
+                double nextSlope = point2.slope;
+                int nbrPoints = 1000;
 
-                double nextSlope = points[i + 1].slope;
-
-                //if (point2.X < point1.X)
+                List<PointF> interpolatedPoints;
+                //if (isReverse[i])
                 //{
-                //    // Inverser l'ordre des points
-                //    PointInfo temp = point1;
-                //    point1 = point2;
-                //    point2 = temp;
+                //}
+                //else
+                //{
                 //}
 
-                InterpolateHermiteSegment(point1, point2, point1.slope, nextSlope);
+                interpolatedPoints = CalculateHermiteCurve(pt1X, pt2X, pt1Y, pt2Y, currentSlope, nextSlope, nbrPoints);
+
+                foreach (PointF point in interpolatedPoints)
+                {
+                    lineSeries.Points.Add(new DataPoint(point.X, point.Y));
+                }
             }
 
             plotModel.InvalidatePlot(true);
         }
 
-        private void DrawInterpolationCurve()
+
+        private List<PointF> CalculateHermiteCurve(double pt1X, double pt2X, double pt1Y, double pt2Y, double currentSlope, double nextSlope, int nbrPoints)
         {
+            List<PointF> points = new List<PointF>();
 
-            var xValues = new[] { 1.0, 2.0, 3.0, 4.0 };
-            var yValues = new[] { 2.0, 3.0, 5.0, 4.0 };
-            var slopes = new[] { 0.5, -0.2, 0.7, 0.1 };
+            double step = (pt2X - pt1X) / nbrPoints;
 
-
-            var spline = CubicSpline.InterpolateHermite(xValues, yValues, slopes);
-
-
-            var interpolatedPoints = new List<DataPoint>();
-            for (double x = xValues[0]; x <= xValues[xValues.Length - 1]; x += 0.1)
+            for (int i = 0; i <= nbrPoints; i++)
             {
-                double y = spline.Interpolate(x);
-                interpolatedPoints.Add(new DataPoint(x, y));
+                double x = pt1X + step * i;
+                double interpolatedY = CalculateInterpolatedY(x, pt1X, pt2X, pt1Y, pt2Y, currentSlope, nextSlope);
+                points.Add(new PointF((float)x, (float)interpolatedY));
             }
 
-            lineSeries.Points.Clear();
-            lineSeries.Points.AddRange(interpolatedPoints);
+            return points;
         }
 
-        private void DebugMessage(string message)
+        private double CalculateInterpolatedY(double x, double x0, double x1, double y0, double y1, double currentSlope, double nextSlope)
         {
-            textBoxOutput.Items.Add(message);
+            double t = (x - x0) / (x1 - x0);
+            double l1 = (t - 1) * (t - 1) * (2 * t + 1);
+            double l2 = t * t * (-2 * t + 3);
+            double l3 = (t - 1) * (t - 1) * t;
+            double l4 = t * t * (t - 1);
+            return l1 * y0 + l2 * y1 + l3 * currentSlope * (x1 - x0) + l4 * nextSlope * (x1 - x0);
         }
-
-        private void InterpolateHermiteSegment(PointInfo point1, PointInfo point2, double currentSlope, double nextSlope)
-        {
-            const int numberOfPoints = 100;
-
-            double deltaX = point2.X - point1.X;
-            double h = deltaX / numberOfPoints;
-
-
-            List<DataPoint> interpolatedPoints = new List<DataPoint>();
-            for (int i = 0; i <= numberOfPoints; i++)
-            {
-                double x = point1.X + h * i;
-                double t = (x - point1.X) / deltaX; // Normalize
-
-
-                double l1 = (t - 1) * (t - 1) * (2 * t + 1);
-                double l2 = t * t * (-2 * t + 3);
-                double l3 = (t - 1) * (t - 1) * t;
-                double l4 = t * t * (t - 1);
-
-
-                double interpolatedY = l1 * point1.Y + l2 * point2.Y + l3 * currentSlope * deltaX + l4 * nextSlope * deltaX;
-                interpolatedPoints.Add(new DataPoint(x, interpolatedY));
-            }
-
-
-            for (int i = 0; i < interpolatedPoints.Count - 1; i++)
-            {
-                lineSeries.Points.Add(interpolatedPoints[i]);
-                lineSeries.Points.Add(new DataPoint(double.NaN, double.NaN)); 
-            }
-        }
-
 
         private void CalculateSlopes()
         {
-
             int n = points.Count;
             for (int i = 0; i < n - 1; i++)
             {
@@ -285,68 +222,25 @@ namespace MathProjet
                     slope = deltaY / deltaX,
                 };
             }
-            //List<Segment> segmentsTempo = new List<Segment>(segments);
-            //for (int i = 0; i < segmentsTempo.Count; i++)
-            //{
-            //    double deltaY;
-            //    double deltaX;
-            //    if (segmentsTempo[i].Point1.X < segmentsTempo[i].Point2.X)
-            //    {
-            //        // point2 in x in segment is before point 1, We inverse, because we want pent from left to right
-            //        deltaY = segmentsTempo[i].Point2.Y - segmentsTempo[i].Point1.Y;
-            //        deltaX = segmentsTempo[i].Point2.X - segmentsTempo[i].Point1.X;
-            //    }
-            //    else
-            //    {
-            //        // It's normal, point2 in x is after point 1
-            //        deltaY = segmentsTempo[i].Point1.Y - segmentsTempo[i].Point2.Y;
-            //        deltaX = segmentsTempo[i].Point1.X - segmentsTempo[i].Point2.X;
-            //    }
-
-            //    double slope = deltaY / deltaX;
-
-            //    if (slope < 100)
-            //    {
-            //        segments[i] = new Segment
-            //        {
-            //            Point1 = segments[i].Point1,
-            //            Point2 = segments[i].Point2,
-            //            Slope = slope
-            //        };
-            //    }
-            //    else
-            //    {
-            //        segments[i] = new Segment
-            //        {
-            //            Point1 = segments[i].Point1,
-            //            Point2 = segments[i].Point2,
-            //            Slope = double.NaN
-            //        };
-            //    }
-            //}
         }
 
-        
-
-
-
-        private void start_App_btn_Click(object sender, EventArgs e)
+        private void generate_courbe_Click(object sender, EventArgs e)
         {
-            Point form1Location = this.Location;
+            points.Clear(); 
 
-            this.Hide();
+            foreach (DataGridViewRow row in dataGridViewPoints.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    char letter = Convert.ToChar(row.Cells["Letter"].Value);
+                    double x = Convert.ToDouble(row.Cells["X"].Value);
+                    double y = Convert.ToDouble(row.Cells["Y"].Value);
+                    double slope = Convert.ToDouble(row.Cells["Slope"].Value);
 
-            Form2 form2 = new Form2();
-            form2.StartPosition = FormStartPosition.Manual;
-            form2.Location = form1Location;
-
-            form2.Opacity = 1;
-            form2.Show();
-        }
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
+                    points.Add(new PointInfo { Letter = letter, X = x, Y = y, slope = slope });
+                }
+            }
+            RenderDraw();
         }
     }
 }

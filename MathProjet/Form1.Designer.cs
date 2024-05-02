@@ -28,69 +28,48 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.start_App_btn = new System.Windows.Forms.Button();
-            this.listBoxPoints = new System.Windows.Forms.ListBox();
-            this.listBoxPentes = new System.Windows.Forms.ListBox();
-            this.textBoxOutput = new System.Windows.Forms.ListBox();
+            this.generate_courbe = new System.Windows.Forms.Button();
+            this.dataGridViewPoints = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPoints)).BeginInit();
             this.SuspendLayout();
             // 
-            // start_App_btn
+            // generate_courbe
             // 
-            this.start_App_btn.Location = new System.Drawing.Point(1333, 12);
-            this.start_App_btn.Name = "start_App_btn";
-            this.start_App_btn.Size = new System.Drawing.Size(130, 23);
-            this.start_App_btn.TabIndex = 0;
-            this.start_App_btn.Text = "Démarrer l\'application";
-            this.start_App_btn.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.start_App_btn.UseVisualStyleBackColor = true;
-            this.start_App_btn.Click += new System.EventHandler(this.start_App_btn_Click);
+            this.generate_courbe.Location = new System.Drawing.Point(1333, 12);
+            this.generate_courbe.Name = "generate_courbe";
+            this.generate_courbe.Size = new System.Drawing.Size(130, 23);
+            this.generate_courbe.TabIndex = 0;
+            this.generate_courbe.Text = "Generate Curve";
+            this.generate_courbe.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.generate_courbe.UseVisualStyleBackColor = true;
+            this.generate_courbe.Click += new System.EventHandler(this.generate_courbe_Click);
             // 
-            // listBoxPoints
+            // dataGridViewPoints
             // 
-            this.listBoxPoints.FormattingEnabled = true;
-            this.listBoxPoints.Location = new System.Drawing.Point(820, 12);
-            this.listBoxPoints.Name = "listBoxPoints";
-            this.listBoxPoints.Size = new System.Drawing.Size(453, 95);
-            this.listBoxPoints.TabIndex = 1;
-            // 
-            // listBoxPentes
-            // 
-            this.listBoxPentes.FormattingEnabled = true;
-            this.listBoxPentes.Location = new System.Drawing.Point(139, 12);
-            this.listBoxPentes.Name = "listBoxPentes";
-            this.listBoxPentes.Size = new System.Drawing.Size(606, 95);
-            this.listBoxPentes.TabIndex = 2;
-            // 
-            // textBoxOutput
-            // 
-            this.textBoxOutput.FormattingEnabled = true;
-            this.textBoxOutput.Location = new System.Drawing.Point(781, 444);
-            this.textBoxOutput.Name = "textBoxOutput";
-            this.textBoxOutput.Size = new System.Drawing.Size(682, 173);
-            this.textBoxOutput.TabIndex = 3;
-            this.textBoxOutput.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.dataGridViewPoints.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewPoints.Location = new System.Drawing.Point(1000, 74);
+            this.dataGridViewPoints.Name = "dataGridViewPoints";
+            this.dataGridViewPoints.Size = new System.Drawing.Size(463, 303);
+            this.dataGridViewPoints.TabIndex = 4;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1584, 861);
-            this.Controls.Add(this.textBoxOutput);
-            this.Controls.Add(this.listBoxPentes);
-            this.Controls.Add(this.listBoxPoints);
-            this.Controls.Add(this.start_App_btn);
+            this.Controls.Add(this.dataGridViewPoints);
+            this.Controls.Add(this.generate_courbe);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPoints)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button start_App_btn;
-        private System.Windows.Forms.ListBox listBoxPoints;
-        private System.Windows.Forms.ListBox listBoxPentes;
-        private System.Windows.Forms.ListBox textBoxOutput;
+        private System.Windows.Forms.Button generate_courbe;
+        private System.Windows.Forms.DataGridView dataGridViewPoints;
     }
 }
 
