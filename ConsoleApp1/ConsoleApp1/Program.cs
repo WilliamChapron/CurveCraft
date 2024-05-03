@@ -74,7 +74,7 @@ public class NautilusSimulator
             velocity = velocity + dt * acceleration;
             position = position + dt * velocity;
 
-            position.y = position.y / 2;
+            position.y = position.y / 1.5;
 
             positions.Add(position);
 
