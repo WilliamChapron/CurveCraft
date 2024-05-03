@@ -31,6 +31,7 @@
             this.start_Demo1_btn = new System.Windows.Forms.Button();
             this.start_Demo2_btn = new System.Windows.Forms.Button();
             this.start_Demo3_btn = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // start_Demo1_btn
@@ -68,17 +69,27 @@
             this.start_Demo3_btn.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.start_Demo3_btn.UseVisualStyleBackColor = true;
             // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(275, 215);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(0, 0);
+            this.textBox2.TabIndex = 5;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.start_Demo3_btn);
             this.Controls.Add(this.start_Demo2_btn);
             this.Controls.Add(this.start_Demo1_btn);
             this.Name = "Form2";
             this.Text = "Form2";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -87,5 +98,6 @@
         private System.Windows.Forms.Button start_Demo1_btn;
         private System.Windows.Forms.Button start_Demo2_btn;
         private System.Windows.Forms.Button start_Demo3_btn;
+        private System.Windows.Forms.TextBox textBox2;
     }
 }
