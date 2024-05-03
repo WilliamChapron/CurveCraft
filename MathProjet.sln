@@ -5,9 +5,9 @@ VisualStudioVersion = 17.9.34714.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathProjet", "MathProjet\MathProjet.csproj", "{48E20603-8E59-462C-8A03-93026A208473}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsApp1", "..\..\..\Desktop\WinFormsApp1\WinFormsApp1\WinFormsApp1.csproj", "{C829D4CA-9549-4BDE-96BE-9F7BB40B4143}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exo3Courbes", "..\..\..\Desktop\WinFormsApp1\WinFormsApp1\Exo3Courbes.csproj", "{C829D4CA-9549-4BDE-96BE-9F7BB40B4143}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "..\..\..\Downloads\ConsoleApp1\ConsoleApp1\ConsoleApp1.csproj", "{0CEC8039-5114-4B16-8E5E-F5CF8C9932ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exo3Console", "..\..\..\Downloads\ConsoleApp1\ConsoleApp1\Exo3Console.csproj", "{0CEC8039-5114-4B16-8E5E-F5CF8C9932ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
