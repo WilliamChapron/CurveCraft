@@ -31,5 +31,9 @@ namespace MathProjet
             form1.Show();
         }
 
+        private void start_Demo2_btn_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

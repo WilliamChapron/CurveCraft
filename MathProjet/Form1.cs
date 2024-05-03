@@ -55,28 +55,25 @@ namespace MathProjet
 
         public void StartFunction()
         {
-            // Ajout des points
-            points.Add(new PointInfo() { Letter = 'C', X = 9, Y = 30, slope = 12.5, isReverse = false }); // 0
-            points.Add(new PointInfo() { Letter = 'D', X = 30, Y = 35, slope = 20 / 6, isReverse = true }); // 1
-            points.Add(new PointInfo() { Letter = 'E', X = 18, Y = 48, slope = 2.25, isReverse = false }); // 2
-            points.Add(new PointInfo() { Letter = 'F', X = 43, Y = 42, slope = 10, isReverse = true }); // 3
-            points.Add(new PointInfo() { Letter = 'H', X = 37, Y = 29, slope = 15, isReverse = false }); // 5
-            points.Add(new PointInfo() { Letter = 'G', X = 47, Y = 32, slope = 0, isReverse = false }); // 4
-            points.Add(new PointInfo() { Letter = 'I', X = 48, Y = 23, slope = 30, isReverse = true }); // 6
-            points.Add(new PointInfo() { Letter = 'L', X = 29, Y = 13, slope = 2.5, isReverse = false }); // 7
-            points.Add(new PointInfo() { Letter = 'M', X = 30, Y = 8, slope = 2 + (2 / 3), isReverse = true }); // 8
-            points.Add(new PointInfo() { Letter = 'N', X = 13, Y = 10, slope = 10 / 13, isReverse = true }); // 9
-            points.Add(new PointInfo() { Letter = 'C', X = 9, Y = 30, slope = 12.5, isReverse = false }); // Repeat the first point to close the loop
 
-            // Initialisation du tableau isReverse
+            points.Add(new PointInfo() { Letter = 'C', X = 1.51276, Y = 5.54456, slope = 1.2 / 1, isReverse = true }); // C
+            points.Add(new PointInfo() { Letter = 'D', X = 4.66337, Y = 5.54456, slope = 1 / 0.5, isReverse = false }); // D
+            points.Add(new PointInfo() { Letter = 'E', X = 2.81646, Y = 7.52727, slope = 1 / 0.8, isReverse = false }); // E
+            points.Add(new PointInfo() { Letter = 'F', X = 6.7004, Y = 6.80752, slope = -(1.8/0.8), isReverse = true }); // F
+            points.Add(new PointInfo() { Letter = 'G', X = 5.81769, Y = 4.32234, slope = -(2 / 0.5), isReverse = false }); // G
+            points.Add(new PointInfo() { Letter = 'H', X = 7.35225, Y = 4.32234, slope = -(0.8 / 1.8), isReverse = true }); // H
+            points.Add(new PointInfo() { Letter = 'I', X = 7.20287, Y = 2.7063, slope = 0.8 / 1.4, isReverse = false }); // I
+            points.Add(new PointInfo() { Letter = 'J', X = 4.60905, Y = 2.28531, slope = 2.2 / 2, isReverse = false }); // J
+            points.Add(new PointInfo() { Letter = 'K', X = 4.75843, Y = 1.44334, slope = 3.6 / 0.8, isReverse = false }); // K
+            points.Add(new PointInfo() { Letter = 'C', X = 1.51276, Y = 5.54456, slope = 0, isReverse = true }); // C
+
+
             for (int i = 0; i < 10; i++)
             {
                 isReverse[i] = points[i].isReverse;
             }
 
-            // Initialisation de la DataGridView
             dataGridViewPoints.ReadOnly = false;
-            CalculateSlopes();
 
             dataGridViewPoints.ColumnCount = 4;
             dataGridViewPoints.Columns[0].Name = "Letter";
@@ -84,7 +81,7 @@ namespace MathProjet
             dataGridViewPoints.Columns[2].Name = "Y";
             dataGridViewPoints.Columns[3].Name = "Slope";
 
-            // Ajout des points à la DataGridView
+
             foreach (var point in points)
             {
                 dataGridViewPoints.Rows.Add(point.Letter, point.X, point.Y, point.slope);
@@ -162,12 +159,6 @@ namespace MathProjet
                 int nbrPoints = 1000;
 
                 List<PointF> interpolatedPoints;
-                //if (isReverse[i])
-                //{
-                //}
-                //else
-                //{
-                //}
 
                 interpolatedPoints = CalculateHermiteCurve(pt1X, pt2X, pt1Y, pt2Y, currentSlope, nextSlope, nbrPoints);
 

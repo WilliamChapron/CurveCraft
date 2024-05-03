@@ -55,6 +55,7 @@
             this.start_Demo2_btn.Text = "Démarrer la démo exercice 2";
             this.start_Demo2_btn.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.start_Demo2_btn.UseVisualStyleBackColor = true;
+            this.start_Demo2_btn.Click += new System.EventHandler(this.start_Demo2_btn_Click);
             // 
             // start_Demo3_btn
             // 
