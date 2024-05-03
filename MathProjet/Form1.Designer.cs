@@ -28,35 +28,48 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.start_App_btn = new System.Windows.Forms.Button();
+            this.generate_courbe = new System.Windows.Forms.Button();
+            this.dataGridViewPoints = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPoints)).BeginInit();
             this.SuspendLayout();
             // 
-            // start_App_btn
+            // generate_courbe
             // 
-            this.start_App_btn.Location = new System.Drawing.Point(329, 183);
-            this.start_App_btn.Name = "start_App_btn";
-            this.start_App_btn.Size = new System.Drawing.Size(130, 23);
-            this.start_App_btn.TabIndex = 0;
-            this.start_App_btn.Text = "Démarrer l\'application";
-            this.start_App_btn.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.start_App_btn.UseVisualStyleBackColor = true;
-            this.start_App_btn.Click += new System.EventHandler(this.start_App_btn_Click);
+            this.generate_courbe.Location = new System.Drawing.Point(1333, 12);
+            this.generate_courbe.Name = "generate_courbe";
+            this.generate_courbe.Size = new System.Drawing.Size(130, 23);
+            this.generate_courbe.TabIndex = 0;
+            this.generate_courbe.Text = "Generate Curve";
+            this.generate_courbe.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.generate_courbe.UseVisualStyleBackColor = true;
+            this.generate_courbe.Click += new System.EventHandler(this.generate_courbe_Click);
+            // 
+            // dataGridViewPoints
+            // 
+            this.dataGridViewPoints.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewPoints.Location = new System.Drawing.Point(1000, 74);
+            this.dataGridViewPoints.Name = "dataGridViewPoints";
+            this.dataGridViewPoints.Size = new System.Drawing.Size(463, 303);
+            this.dataGridViewPoints.TabIndex = 4;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.start_App_btn);
+            this.ClientSize = new System.Drawing.Size(1584, 861);
+            this.Controls.Add(this.dataGridViewPoints);
+            this.Controls.Add(this.generate_courbe);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPoints)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button start_App_btn;
+        private System.Windows.Forms.Button generate_courbe;
+        private System.Windows.Forms.DataGridView dataGridViewPoints;
     }
 }
 
